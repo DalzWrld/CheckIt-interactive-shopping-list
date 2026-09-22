@@ -37,3 +37,12 @@ def update_item(item_id):
  
     db.session.commit()
     return jsonify(item.to_dict()), 200
+
+
+# ── DELETE /items/<id> ── delete a single item ──────────────────────
+@items_bp.route("/<int:item_id>", methods=["DELETE"])
+def delete_item(item_id):
+    item = Item.query.get_or_404(item_id)
+    db.session.delete(item)
+    db.session.commit()
+    return jsonify({"message": f'Item "{item.name}" deleted.'}), 200
