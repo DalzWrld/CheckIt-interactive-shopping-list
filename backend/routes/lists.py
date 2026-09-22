@@ -82,3 +82,20 @@ def add_item(list_id):
     return jsonify(item.to_dict()), 201
 
 
+# ── PATCH /lists/<id> ── update list name or budget ─────────────────
+@lists_bp.route("/<int:list_id>", methods=["PATCH"])
+def update_list(list_id):
+    shopping_list = ShoppingList.query.get_or_404(list_id)
+    data = request.get_json()
+ 
+    if "name" in data:
+        name = data["name"].strip()
+        if not name:
+            return jsonify({"error": "List name cannot be empty."}), 400
+        shopping_list.name = name
+ 
+    if "budget" in data:
+        shopping_list.budget = float(data["budget"]) if data["budget"] else None
+ 
+    db.session.commit()
+    return jsonify(shopping_list.to_dict()), 200
