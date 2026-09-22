@@ -25,3 +25,17 @@ class ShoppingList(db.Model):
         if include_items:
             data["items"] = [item.to_dict() for item in self.items]
         return data
+
+
+class Item(db.Model):
+    __tablename__ = "items"
+ 
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(150), nullable=False)
+    price = db.Column(db.Float, nullable=False, default=0.0)
+    quantity = db.Column(db.Integer, nullable=False, default=1)
+    category = db.Column(db.String(50), nullable=False, default="Uncategorized")
+    purchased = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, default=datetime.now)
+ 
+    list_id = db.Column(db.Integer, db.ForeignKey("shopping_lists.id"), nullable=False)
