@@ -99,3 +99,12 @@ def update_list(list_id):
  
     db.session.commit()
     return jsonify(shopping_list.to_dict()), 200
+
+
+# ── DELETE /lists/<id> ── delete a list and all its items ───────────
+@lists_bp.route("/<int:list_id>", methods=["DELETE"])
+def delete_list(list_id):
+    shopping_list = ShoppingList.query.get_or_404(list_id)
+    db.session.delete(shopping_list)
+    db.session.commit()
+    return jsonify({"message": f'List "{shopping_list.name}" deleted.'}), 200
