@@ -17,3 +17,22 @@ class Config:
  
     # CORS — restrict origins in production
     CORS_ORIGINS = "*"
+
+
+class DevelopmentConfig(Config):
+    """Local development — debug on, SQLite database."""
+ 
+    DEBUG = True
+    SQLALCHEMY_DATABASE_URI = os.environ.get(
+        "DEV_DATABASE_URL",
+        f"sqlite:///{os.path.join(BASE_DIR, 'checkit_dev.db')}"
+    )
+    SQLALCHEMY_ECHO = True          # Prints SQL to terminal — helpful while building
+ 
+ 
+class TestingConfig(Config):
+    """Testing — uses an in-memory SQLite DB so tests never touch real data."""
+ 
+    TESTING = True
+    SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
+    WTF_CSRF_ENABLED = False
