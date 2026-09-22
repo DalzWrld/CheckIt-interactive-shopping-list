@@ -10,6 +10,11 @@ class Config:
     # Flask
     SECRET_KEY = os.environ.get("SECRET_KEY", "checkit-dev-secret-key")
     JSON_SORT_KEYS = False
+
+    # Database
+    SQLALCHEMY_DATABASE_URI = os.environ.get(
+        "DATABASE_URL", f"sqlite:///{os.path.join(BASE_DIR, 'instance', 'checkit_dev.db')}"
+    )
  
     # SQLAlchemy
     SQLALCHEMY_TRACK_MODIFICATIONS = False
