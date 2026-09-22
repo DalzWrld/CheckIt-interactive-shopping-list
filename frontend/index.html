@@ -6,95 +6,203 @@
     <title>CheckIt — Shopping List</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
     <div class="bg-texture"></div>
 
-    <div class="app-wrapper">
+    <div class="app-layout">
 
-        <header class="app-header">
-            <div class="logo-mark">✦</div>
-            <h1 class="app-title">CheckIt</h1>
-            <p class="app-subtitle">Your elegant shopping companion</p>
-        </header>
+        <!-- ── Sidebar: Lists ── -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-mark">✦</div>
+                <h1 class="app-title">CheckIt</h1>
+            </div>
 
-        <main class="container">
+            <div class="sidebar-section">
+                <span class="sidebar-label">My Lists</span>
+                <button class="btn-new-list" id="btnNewList">+ New list</button>
+            </div>
 
-            <!-- Add Item Form -->
-            <form id="inputForm" class="input-form" novalidate>
-                <div class="input-row">
-                    <div class="field-group">
-                        <label for="itemName">Item</label>
-                        <input type="text" id="itemName" placeholder="e.g. Organic oat milk" autocomplete="off" required>
+            <ul class="lists-nav" id="listsNav"></ul>
+
+            <div class="sidebar-footer">
+                <p>CheckIt &copy; 2025</p>
+            </div>
+        </aside>
+
+        <!-- ── Main Content ── -->
+        <div class="main-content">
+
+            <!-- Mobile header -->
+            <div class="mobile-header">
+                <button class="btn-menu" id="btnMenu" aria-label="Open lists">☰</button>
+                <span class="mobile-title">CheckIt</span>
+            </div>
+
+            <!-- No list selected -->
+            <div class="welcome-state" id="welcomeState">
+                <div class="welcome-icon">🛒</div>
+                <h2>Welcome to CheckIt</h2>
+                <p>Select a list on the left, or create a new one to get started.</p>
+                <button class="btn-welcome-new" id="btnWelcomeNew">+ Create your first list</button>
+            </div>
+
+            <!-- Active list view -->
+            <div class="list-view" id="listView" hidden>
+
+                <header class="list-view-header">
+                    <div class="list-title-row">
+                        <h2 class="list-view-title" id="listViewTitle">My List</h2>
+                        <button class="btn-icon-sm btn-delete-list" id="btnDeleteList" title="Delete list">🗑️</button>
                     </div>
-                    <div class="field-group field-group--price">
-                        <label for="itemPrice">Price (KSh)</label>
-                        <input type="number" id="itemPrice" placeholder="0.00" min="0" step="0.01" required>
+                    <div class="budget-bar" id="budgetBar" hidden>
+                        <div class="budget-info">
+                            <span id="budgetLabel">Budget: KSh 0</span>
+                            <span id="budgetRemaining"></span>
+                        </div>
+                        <div class="budget-track">
+                            <div class="budget-fill" id="budgetFill"></div>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- Add Item Form -->
+                <form id="inputForm" class="input-form" novalidate>
+                    <div class="input-row">
+                        <div class="field-group fg-name">
+                            <label for="itemName">Item</label>
+                            <input type="text" id="itemName" placeholder="e.g. Organic oat milk" autocomplete="off" required>
+                        </div>
+                        <div class="field-group fg-qty">
+                            <label for="itemQty">Qty</label>
+                            <input type="number" id="itemQty" placeholder="1" min="1" value="1" required>
+                        </div>
+                        <div class="field-group fg-price">
+                            <label for="itemPrice">Price (KSh)</label>
+                            <input type="number" id="itemPrice" placeholder="0.00" min="0" step="0.01" required>
+                        </div>
+                    </div>
+                    <div class="input-row input-row--bottom">
+                        <div class="field-group fg-category">
+                            <label for="itemCategory">Category</label>
+                            <select id="itemCategory">
+                                <option value="Produce">🥦 Produce</option>
+                                <option value="Dairy">🧀 Dairy</option>
+                                <option value="Bakery">🍞 Bakery</option>
+                                <option value="Meat & Fish">🥩 Meat &amp; Fish</option>
+                                <option value="Snacks">🍿 Snacks</option>
+                                <option value="Drinks">🥤 Drinks</option>
+                                <option value="Household">🧹 Household</option>
+                                <option value="Uncategorised">📦 Uncategorised</option>
+                            </select>
+                        </div>
+                        <button type="submit" id="addButton">
+                            <span>+</span> Add to List
+                        </button>
+                    </div>
+                </form>
+
+                <p id="errorMsg" class="error-msg" aria-live="polite"></p>
+
+                <!-- List Section -->
+                <div class="list-section">
+                    <div class="list-header">
+                        <span class="list-count" id="listCount">0 items</span>
+                        <div class="list-header-actions">
+                            <select class="filter-select" id="filterCategory">
+                                <option value="all">All categories</option>
+                                <option value="Produce">🥦 Produce</option>
+                                <option value="Dairy">🧀 Dairy</option>
+                                <option value="Bakery">🍞 Bakery</option>
+                                <option value="Meat & Fish">🥩 Meat &amp; Fish</option>
+                                <option value="Snacks">🍿 Snacks</option>
+                                <option value="Drinks">🥤 Drinks</option>
+                                <option value="Household">🧹 Household</option>
+                                <option value="Uncategorised">📦 Uncategorised</option>
+                            </select>
+                            <button id="clearButton" class="btn-clear">Clear all</button>
+                        </div>
+                    </div>
+
+                    <section id="list" class="item-list" aria-label="Shopping list items"></section>
+
+                    <div class="empty-state" id="emptyState">
+                        <div class="empty-icon">🛒</div>
+                        <p>This list is empty.</p>
+                        <span>Add your first item above.</span>
                     </div>
                 </div>
-                <button type="submit" id="addButton">
-                    <span class="btn-icon">+</span>
-                    <span>Add to List</span>
-                </button>
-            </form>
 
-            <!-- Error message -->
-            <p id="errorMsg" class="error-msg" aria-live="polite"></p>
-
-            <!-- List Section -->
-            <div class="list-section" id="listSection">
-
-                <div class="list-header">
-                    <span class="list-count" id="listCount">0 items</span>
-                    <button id="clearButton" class="btn-clear" title="Clear entire list">Clear all</button>
-                </div>
-
-                <section id="list" class="item-list" aria-label="Shopping list items"></section>
-
-                <div class="empty-state" id="emptyState">
-                    <div class="empty-icon"><img src="images/cart-arrow-down-solid-full.svg" alt="Cart icon"></div>
-                    <p>Your list is empty.</p>
-                    <span>Add your first item above.</span>
+                <!-- Total -->
+                <div class="total-bar" id="totalBar">
+                    <div class="total-label">
+                        <span>Estimated Total</span>
+                        <span class="total-note" id="totalNote"></span>
+                    </div>
+                    <div class="total-amount" id="totalAmount">KSh 0.00</div>
                 </div>
 
             </div>
-
-            <!-- Total -->
-            <div class="total-bar" id="totalBar">
-                <div class="total-label">
-                    <span>Estimated Total</span>
-                    <span class="total-note" id="totalNote"></span>
-                </div>
-                <div class="total-amount" id="totalAmount">KSh 0.00</div>
-            </div>
-
-        </main>
-
-        <footer class="app-footer">
-            <p>Made with care &mdash; CheckIt &copy; 2025</p>
-            <p>Icons by <a href="https://fontawesome.com/" target="_blank" style="text-decoration: none; color: var(--brown-deep);">Font Awesome</a></p>
-        </footer>
-
+        </div>
     </div>
 
-    <!-- Edit Modal -->
-    <div class="modal-overlay" id="modalOverlay" aria-hidden="true">
-        <div class="modal" role="dialog" aria-labelledby="modalTitle">
-            <h2 id="modalTitle">Edit Item</h2>
+    <!-- ── New List Modal ── -->
+    <div class="modal-overlay" id="newListModal" aria-hidden="true">
+        <div class="modal" role="dialog" aria-labelledby="newListTitle">
+            <h2 id="newListTitle">New Shopping List</h2>
+            <div class="field-group">
+                <label for="newListName">List name</label>
+                <input type="text" id="newListName" placeholder="e.g. Weekly Groceries" autocomplete="off">
+            </div>
+            <div class="field-group">
+                <label for="newListBudget">Budget (KSh) <span class="optional">optional</span></label>
+                <input type="number" id="newListBudget" placeholder="e.g. 5000" min="0" step="0.01">
+            </div>
+            <div class="modal-actions">
+                <button class="btn-modal btn-modal--cancel" id="newListCancel">Cancel</button>
+                <button class="btn-modal btn-modal--save" id="newListSave">Create List</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Edit Item Modal ── -->
+    <div class="modal-overlay" id="editModal" aria-hidden="true">
+        <div class="modal" role="dialog" aria-labelledby="editModalTitle">
+            <h2 id="editModalTitle">Edit Item</h2>
             <div class="field-group">
                 <label for="editName">Item name</label>
                 <input type="text" id="editName" autocomplete="off">
             </div>
+            <div class="input-row">
+                <div class="field-group">
+                    <label for="editQty">Quantity</label>
+                    <input type="number" id="editQty" min="1">
+                </div>
+                <div class="field-group">
+                    <label for="editPrice">Price (KSh)</label>
+                    <input type="number" id="editPrice" min="0" step="0.01">
+                </div>
+            </div>
             <div class="field-group">
-                <label for="editPrice">Price (KSh)</label>
-                <input type="number" id="editPrice" min="0" step="0.01">
+                <label for="editCategory">Category</label>
+                <select id="editCategory">
+                    <option value="Produce">🥦 Produce</option>
+                    <option value="Dairy">🧀 Dairy</option>
+                    <option value="Bakery">🍞 Bakery</option>
+                    <option value="Meat & Fish">🥩 Meat &amp; Fish</option>
+                    <option value="Snacks">🍿 Snacks</option>
+                    <option value="Drinks">🥤 Drinks</option>
+                    <option value="Household">🧹 Household</option>
+                    <option value="Uncategorised">📦 Uncategorised</option>
+                </select>
             </div>
             <div class="modal-actions">
-                <button id="modalCancel" class="btn-modal btn-modal--cancel">Cancel</button>
-                <button id="modalSave" class="btn-modal btn-modal--save">Save Changes</button>
+                <button class="btn-modal btn-modal--cancel" id="editCancel">Cancel</button>
+                <button class="btn-modal btn-modal--save" id="editSave">Save Changes</button>
             </div>
         </div>
     </div>
