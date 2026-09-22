@@ -1,4 +1,4 @@
-from app import db
+from extensions import db
 from flask import Blueprint, jsonify, request
 from models import Item
 
