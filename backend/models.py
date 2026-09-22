@@ -14,7 +14,6 @@ class ShoppingList(db.Model):
     # Cascade delete — removing a list removes all its items
     items = db.relationship("Item", back_populates="shopping_list", cascade="all, delete-orphan", lazy=True)
 
-
     def to_dict(self, include_items=False):
         data = {
             "id": self.id,
@@ -39,3 +38,19 @@ class Item(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.now)
  
     list_id = db.Column(db.Integer, db.ForeignKey("shopping_lists.id"), nullable=False)
+
+    def subtotal(self):
+        return round(self.price * self.quantity, 2)
+ 
+    def to_dict(self):
+        return {
+            "id":        self.id,
+            "name":      self.name,
+            "price":     self.price,
+            "quantity":  self.quantity,
+            "category":  self.category,
+            "purchased": self.purchased,
+            "subtotal":  self.subtotal(),
+            "list_id":   self.list_id,
+            "created_at": self.created_at.isoformat(),
+        }
