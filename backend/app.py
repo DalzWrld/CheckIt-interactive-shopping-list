@@ -12,7 +12,7 @@ from extensions import cors, db
 from flask import Flask
 
 
-def create_app(env: str = None) -> Flask:
+def create_app(env: str | None = None) -> Flask:
     """
     Create and return a configured Flask application.
  
@@ -30,3 +30,22 @@ def create_app(env: str = None) -> Flask:
     # ── Initialise extensions ────────────────────────────────────────
     db.init_app(app)
     cors.init_app(app, resources={r"/*": {"origins": app.config["CORS_ORIGINS"]}})
+
+    # ── Register blueprints ──────────────────────────────────────────
+    from routes.items import items_bp
+    from routes.lists import lists_bp
+ 
+    app.register_blueprint(lists_bp)
+    app.register_blueprint(items_bp)
+ 
+    # ── Create database tables ───────────────────────────────────────
+    with app.app_context():
+        db.create_all()
+ 
+    return app
+ 
+ 
+# ── Dev entry point ──────────────────────────────────────────────────
+if __name__ == "__main__":
+    app = create_app("development")
+    app.run(debug=True, port=5000)
