@@ -36,3 +36,26 @@ class TestingConfig(Config):
     TESTING = True
     SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
     WTF_CSRF_ENABLED = False
+
+
+class ProductionConfig(Config):
+    """Production — expects a proper DATABASE_URL env variable."""
+ 
+    DEBUG = False
+    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL")
+    CORS_ORIGINS = os.environ.get("ALLOWED_ORIGINS", "*")
+ 
+    # Safety check — raise early if no DB URL is set
+    @classmethod
+    def validate(cls):
+        if not cls.SQLALCHEMY_DATABASE_URI:
+            raise ValueError("DATABASE_URL environment variable is not set.")
+ 
+ 
+# ── Config map — used by create_app() ───────────────────────────────
+config_map = {
+    "development": DevelopmentConfig,
+    "testing":     TestingConfig,
+    "production":  ProductionConfig,
+    "default":     DevelopmentConfig,
+}
