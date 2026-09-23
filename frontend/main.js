@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════
    CheckIt — main.js
-   Communicates with Flask REST API at localhost:5000
+   Communicates with Flask REST API at localhost:5001
 ════════════════════════════════════════════════════ */
 
 const API = "http://127.0.0.1:5001";  // Flask backend URL
