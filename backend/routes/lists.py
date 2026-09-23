@@ -17,7 +17,7 @@ def get_lists():
 def create_list():
     data = request.get_json()
 
-    name   = (data.get("name") or "").strip()
+    name = (data.get("name") or "").strip()
     budget = data.get("budget")
 
     if not name:
@@ -79,12 +79,12 @@ def add_item(list_id):
     ShoppingList.query.get_or_404(list_id)
     data = request.get_json()
 
-    name     = (data.get("name") or "").strip()
-    price    = data.get("price")
+    name = (data.get("name") or "").strip()
+    price = data.get("price")
     quantity = data.get("quantity", 1)
     category = (data.get("category") or "Uncategorized").strip()
-    aisle    = (data.get("aisle") or "").strip() or None
-    note     = (data.get("note")  or "").strip() or None
+    aisle = (data.get("aisle") or "").strip() or None
+    note = (data.get("note") or "").strip() or None
 
     if not name:
         return jsonify({"error": "Item name is required."}), 400
