@@ -11,6 +11,7 @@ sqlalchemy = "*"
 flask-migrate = "*"
 flask-restful = "*"
 marshmallow = "*"
+python-dotenv = "*"
 
 [dev-packages]
 
