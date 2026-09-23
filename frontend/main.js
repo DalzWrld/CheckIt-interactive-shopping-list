@@ -189,10 +189,14 @@ function renderDashboard() {
 
     document.querySelectorAll(".list-nav-item").forEach(el => el.classList.remove("active"));
 
+    // Scroll to top when returning to dashboard
+    window.scrollTo({ top: 0, behavior: "smooth" });
+
     statTotalLists.textContent = allLists.length;
 
     if (allLists.length === 0) {
-        dashboardEmpty.hidden = false;
+        dashboardEmpty.hidden   = false;
+        listCardsGrid.hidden    = true;
         listCardsGrid.innerHTML = "";
         statTotalItems.textContent = 0;
         statChecked.textContent    = 0;
@@ -200,7 +204,9 @@ function renderDashboard() {
         return;
     }
 
+    // Has lists — make sure empty state is gone and grid is visible
     dashboardEmpty.hidden = true;
+    listCardsGrid.hidden  = false;
 
     // Fetch items for all lists to build dashboard cards
     Promise.all(allLists.map(l => apiFetch(`/lists/${l.id}/items`))).then(results => {
@@ -299,6 +305,9 @@ async function openListView(listId) {
 
     dashboard.hidden = true;
     listView.hidden  = false;
+
+    // Scroll to top so user sees the list header, not mid-page
+    window.scrollTo({ top: 0, behavior: "smooth" });
 
     const lst = allLists.find(l => l.id === listId);
     listViewTitle.textContent   = lst.name;
@@ -522,6 +531,7 @@ async function togglePurchased(itemId, purchased) {
         });
         const idx = allItems.findIndex(i => i.id === itemId);
         if (idx !== -1) allItems[idx] = updated;
+        // Stay on the list view — just re-render items in place
         renderItems();
     } catch (_) {}
 }
