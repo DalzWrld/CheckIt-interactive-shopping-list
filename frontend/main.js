@@ -14,7 +14,7 @@ const CAT = {
     "Snacks":        { color: "#9c27b0", emoji: "🍿" },
     "Drinks":        { color: "#00bcd4", emoji: "🥤" },
     "Household":     { color: "#607d8b", emoji: "🧹" },
-    "Uncategorized": { color: "#9e9e9e", emoji: "📦" },
+    "Uncategorised": { color: "#9e9e9e", emoji: "📦" },
 };
 
 // ── State ────────────────────────────────────────
@@ -375,7 +375,7 @@ function renderItems() {
     });
 
     Object.keys(groups).forEach(cat => {
-        const catConf  = CAT[cat] || CAT["Uncategorized"];
+        const catConf  = CAT[cat] || CAT["Uncategorised"];
         const groupDiv = document.createElement("div");
         groupDiv.className = "cat-group";
 
@@ -465,7 +465,7 @@ function renderBreakdown() {
     Object.entries(byCategory)
         .sort((a, b) => b[1] - a[1])
         .forEach(([cat, total]) => {
-            const catConf = CAT[cat] || CAT["Uncategorized"];
+            const catConf = CAT[cat] || CAT["Uncategorised"];
             const pct     = (total / maxVal) * 100;
             const row     = document.createElement("div");
             row.className = "breakdown-row";
@@ -629,7 +629,17 @@ newListCancel.addEventListener("click", () => closeModal(newListModal));
 newListSave.addEventListener("click", async () => {
     const name   = newListName.value.trim();
     const budget = parseFloat(newListBudget.value) || null;
-    if (!name) return showError("Please enter a list name.");
+
+    if (!name) {
+        newListName.style.borderColor = "#ef4444";
+        newListName.focus();
+        return;
+    }
+
+    newListName.style.borderColor = "";
+    newListSave.textContent = "Creating…";
+    newListSave.disabled    = true;
+
     try {
         const newList = await apiFetch("/lists/", {
             method: "POST",
@@ -639,7 +649,13 @@ newListSave.addEventListener("click", async () => {
         closeModal(newListModal);
         renderSidebar();
         await openListView(newList.id);
-    } catch (_) {}
+    } catch (err) {
+        newListSave.textContent = "Create List";
+        newListSave.disabled    = false;
+    }
+
+    newListSave.textContent = "Create List";
+    newListSave.disabled    = false;
 });
 
 // ── Mobile sidebar ────────────────────────────────
