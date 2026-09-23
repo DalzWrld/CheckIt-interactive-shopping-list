@@ -61,12 +61,54 @@ const toast = (() => {
         });
  
         return el;
+    }
 
-        function dismiss(el) {
+    function dismiss(el) {
         if (!el || el.classList.contains("toast--leaving")) return;
         el.classList.remove("toast--visible");
         el.classList.add("toast--leaving");
         el.addEventListener("transitionend", () => el.remove(), { once: true });
     }
+
+    // ── Confirm toast (replaces window.confirm) ────
+    function confirm(message, onConfirm, onCancel) {
+        const el = document.createElement("div");
+        el.className = "toast toast--warning toast--confirm";
+        el.setAttribute("role", "alertdialog");
+ 
+        el.innerHTML = `
+            <span class="toast-icon">${ICONS.warning}</span>
+            <div class="toast-confirm-body">
+                <span class="toast-message">${message}</span>
+                <div class="toast-confirm-actions">
+                    <button class="toast-btn toast-btn--cancel">Cancel</button>
+                    <button class="toast-btn toast-btn--confirm">Confirm</button>
+                </div>
+            </div>
+        `;
+ 
+        el.querySelector(".toast-btn--confirm").addEventListener("click", () => {
+            dismiss(el);
+            if (onConfirm) onConfirm();
+        });
+ 
+        el.querySelector(".toast-btn--cancel").addEventListener("click", () => {
+            dismiss(el);
+            if (onCancel) onCancel();
+        });
+ 
+        container.appendChild(el);
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => el.classList.add("toast--visible"));
+        });
     }
+ 
+    // ── Public API ─────────────────────────────────
+    return {
+        success: (msg, duration)  => show(msg, "success", duration),
+        error: (msg, duration) => show(msg, "error", duration || 5000),
+        warning: (msg, duration) => show(msg, "warning", duration),
+        info: (msg, duration) => show(msg, "info", duration),
+        confirm,
+    };
 })();
