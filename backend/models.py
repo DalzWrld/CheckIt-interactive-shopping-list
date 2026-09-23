@@ -37,7 +37,7 @@ class Item(db.Model):
     name       = db.Column(db.String(150), nullable=False)
     price      = db.Column(db.Float, nullable=False, default=0.0)
     quantity   = db.Column(db.Integer, nullable=False, default=1)
-    category   = db.Column(db.String(50), nullable=False, default="Uncategorised")
+    category   = db.Column(db.String(50), nullable=False, default="Uncategorized")
     aisle      = db.Column(db.String(100), nullable=True)   # e.g. "Aisle 3", "Butchery"
     note       = db.Column(db.String(255), nullable=True)   # e.g. "Get the organic one"
     purchased  = db.Column(db.Boolean, default=False)

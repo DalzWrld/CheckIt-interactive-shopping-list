@@ -14,7 +14,7 @@ const CAT = {
     "Snacks":        { color: "#9c27b0", emoji: "🍿" },
     "Drinks":        { color: "#00bcd4", emoji: "🥤" },
     "Household":     { color: "#607d8b", emoji: "🧹" },
-    "Uncategorised": { color: "#9e9e9e", emoji: "📦" },
+    "Uncategorized": { color: "#9e9e9e", emoji: "📦" },
 };
 
 // ── State ────────────────────────────────────────
@@ -375,7 +375,7 @@ function renderItems() {
     });
 
     Object.keys(groups).forEach(cat => {
-        const catConf  = CAT[cat] || CAT["Uncategorised"];
+        const catConf  = CAT[cat] || CAT["Uncategorized"];
         const groupDiv = document.createElement("div");
         groupDiv.className = "cat-group";
 
@@ -465,7 +465,7 @@ function renderBreakdown() {
     Object.entries(byCategory)
         .sort((a, b) => b[1] - a[1])
         .forEach(([cat, total]) => {
-            const catConf = CAT[cat] || CAT["Uncategorised"];
+            const catConf = CAT[cat] || CAT["Uncategorized"];
             const pct     = (total / maxVal) * 100;
             const row     = document.createElement("div");
             row.className = "breakdown-row";
