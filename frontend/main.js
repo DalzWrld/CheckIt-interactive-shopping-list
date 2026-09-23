@@ -3,7 +3,7 @@
    Communicates with Flask REST API at localhost:5001
 ════════════════════════════════════════════════════ */
 
-const API = "http://127.0.0.1:5001";  // Flask backend URL
+const API = "http://127.0.0.1:5001"; // Flask backend URL
 
 // ── Category config ──────────────────────────────
 const CAT = {
@@ -188,8 +188,6 @@ function renderDashboard() {
     activeListId     = null;
 
     document.querySelectorAll(".list-nav-item").forEach(el => el.classList.remove("active"));
-
-    // Scroll to top when returning to dashboard
     window.scrollTo({ top: 0, behavior: "smooth" });
 
     statTotalLists.textContent = allLists.length;
@@ -204,9 +202,18 @@ function renderDashboard() {
         return;
     }
 
-    // Has lists — make sure empty state is gone and grid is visible
+    // Lists exist — hide empty state immediately, show grid with skeletons
+    // while we wait for item data to arrive
     dashboardEmpty.hidden = true;
     listCardsGrid.hidden  = false;
+    listCardsGrid.innerHTML = allLists.map(() => `
+        <div class="list-card list-card--skeleton">
+            <div class="skeleton skeleton--title"></div>
+            <div class="skeleton skeleton--line"></div>
+            <div class="skeleton skeleton--line short"></div>
+            <div class="skeleton skeleton--bar"></div>
+        </div>
+    `).join("");
 
     // Fetch items for all lists to build dashboard cards
     Promise.all(allLists.map(l => apiFetch(`/lists/${l.id}/items`))).then(results => {
@@ -306,8 +313,10 @@ async function openListView(listId) {
     dashboard.hidden = true;
     listView.hidden  = false;
 
-    // Scroll to top so user sees the list header, not mid-page
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    // Scroll to the items section so user lands directly on the list
+    setTimeout(() => {
+        listEl.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 80);
 
     const lst = allLists.find(l => l.id === listId);
     listViewTitle.textContent   = lst.name;
