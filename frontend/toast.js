@@ -61,5 +61,12 @@ const toast = (() => {
         });
  
         return el;
+
+        function dismiss(el) {
+        if (!el || el.classList.contains("toast--leaving")) return;
+        el.classList.remove("toast--visible");
+        el.classList.add("toast--leaving");
+        el.addEventListener("transitionend", () => el.remove(), { once: true });
+    }
     }
 })();
