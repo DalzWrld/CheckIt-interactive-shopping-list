@@ -27,4 +27,39 @@ const toast = (() => {
         warning: "⚠",
         info:    "ℹ",
     };
+
+     // ── Core show function ─────────────────────────
+    function show(message, type = "info", duration = DURATION) {
+        const el = document.createElement("div");
+        el.className = `toast toast--${type}`;
+        el.setAttribute("role", "alert");
+        el.setAttribute("aria-live", "polite");
+ 
+        el.innerHTML = `
+            <span class="toast-icon">${ICONS[type]}</span>
+            <span class="toast-message">${message}</span>
+            <button class="toast-close" aria-label="Dismiss">✕</button>
+        `;
+ 
+        // Dismiss on close button
+        el.querySelector(".toast-close").addEventListener("click", () => dismiss(el));
+ 
+        container.appendChild(el);
+ 
+        // Trigger enter animation on next frame
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => el.classList.add("toast--visible"));
+        });
+
+        // Auto-dismiss
+        const timer = setTimeout(() => dismiss(el), duration);
+ 
+        // Pause timer on hover
+        el.addEventListener("mouseenter", () => clearTimeout(timer));
+        el.addEventListener("mouseleave", () => {
+            setTimeout(() => dismiss(el), 1200);
+        });
+ 
+        return el;
+    }
 })();
