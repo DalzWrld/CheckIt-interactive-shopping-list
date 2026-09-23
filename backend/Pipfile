@@ -12,6 +12,7 @@ flask-migrate = "*"
 flask-restful = "*"
 marshmallow = "*"
 python-dotenv = "*"
+dotenv = "*"
 
 [dev-packages]
 
