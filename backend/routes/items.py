@@ -1,5 +1,5 @@
+from flask import Blueprint, request, jsonify
 from extensions import db
-from flask import Blueprint, jsonify, request
 from models import Item
 
 items_bp = Blueprint("items", __name__, url_prefix="/items")
@@ -10,31 +10,37 @@ items_bp = Blueprint("items", __name__, url_prefix="/items")
 def update_item(item_id):
     item = Item.query.get_or_404(item_id)
     data = request.get_json()
- 
+
     if "name" in data:
         name = data["name"].strip()
         if not name:
             return jsonify({"error": "Item name cannot be empty."}), 400
         item.name = name
- 
+
     if "price" in data:
         price = float(data["price"])
         if price < 0:
             return jsonify({"error": "Price cannot be negative."}), 400
         item.price = price
- 
+
     if "quantity" in data:
         qty = int(data["quantity"])
         if qty < 1:
             return jsonify({"error": "Quantity must be at least 1."}), 400
         item.quantity = qty
- 
+
     if "category" in data:
-        item.category = data["category"].strip() or "Uncategorized"
- 
+        item.category = data["category"].strip() or "Uncategorised"
+
+    if "aisle" in data:
+        item.aisle = data["aisle"].strip() or None
+
+    if "note" in data:
+        item.note = data["note"].strip() or None
+
     if "purchased" in data:
         item.purchased = bool(data["purchased"])
- 
+
     db.session.commit()
     return jsonify(item.to_dict()), 200
 
