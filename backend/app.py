@@ -8,8 +8,11 @@ Run directly for development:  python app.py
 import os
 
 from config import config_map
+from dotenv import load_dotenv
 from extensions import cors, db, migrate
 from flask import Flask
+
+load_dotenv()
 
 
 def create_app(env: str | None = None) -> Flask:
