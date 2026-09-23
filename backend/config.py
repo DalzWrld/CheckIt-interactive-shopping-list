@@ -19,6 +19,11 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ECHO = False         # Set to True to log raw SQL queries
 
+    SQLALCHEMY_ENGINE_OPTIONS = {  # noqa: RUF012
+        "pool_pre_ping": True,
+        "pool_recycle": 300,
+    }
+
     # CORS — restrict origins in production
     CORS_ORIGINS = "*"
 

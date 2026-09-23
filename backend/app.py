@@ -32,7 +32,14 @@ def create_app(env: str | None = None) -> Flask:
 
     # ── Initialise extensions ────────────────────────────────────────
     db.init_app(app)
-    cors.init_app(app, resources={r"/*": {"origins": app.config["CORS_ORIGINS"]}})
+
+    cors.init_app(
+        app,
+        resources={r"/*": {"origins": app.config["CORS_ORIGINS"]}},
+        methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+        allow_headers=["Content-Type"],
+    )
+    
     migrate.init_app(app, db)   # Flask-Migrate now manages schema changes
 
     # ── Register blueprints ──────────────────────────────────────────
