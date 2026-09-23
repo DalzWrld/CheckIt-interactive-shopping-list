@@ -20,7 +20,7 @@ const toast = (() => {
     }
  
     // ── Config ─────────────────────────────────────
-    const DURATION  = 3500;   // ms before auto-dismiss
+    const DURATION  = 5000;   // ms before auto-dismiss
     const ICONS = {
         success: "✓",
         error:   "✕",
