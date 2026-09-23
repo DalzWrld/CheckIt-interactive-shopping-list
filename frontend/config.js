@@ -1,1 +1,1 @@
-const API = "http://127.0.0.1:5001"; // Flask backend URL
+const API = "https://checkit-interactive-shopping-list.onrender.com"
