@@ -30,7 +30,7 @@ def update_item(item_id):
         item.quantity = qty
 
     if "category" in data:
-        item.category = data["category"].strip() or "Uncategorised"
+        item.category = data["category"].strip() or "Uncategorized"
 
     if "aisle" in data:
         item.aisle = data["aisle"].strip() or None

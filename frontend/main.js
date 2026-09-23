@@ -14,7 +14,7 @@ const CAT = {
     "Snacks":        { color: "#9c27b0", emoji: "🍿" },
     "Drinks":        { color: "#00bcd4", emoji: "🥤" },
     "Household":     { color: "#607d8b", emoji: "🧹" },
-    "Uncategorised": { color: "#9e9e9e", emoji: "📦" },
+    "Uncategorized": { color: "#9e9e9e", emoji: "📦" },
 };
 
 // ── State ────────────────────────────────────────
@@ -107,6 +107,7 @@ function esc(str) {
 
 function showError(msg) {
     errorMsg.textContent = msg;
+    toast.error(msg);
     clearTimeout(showError._t);
     showError._t = setTimeout(() => { errorMsg.textContent = ""; }, 3500);
 }
@@ -375,7 +376,7 @@ function renderItems() {
     });
 
     Object.keys(groups).forEach(cat => {
-        const catConf  = CAT[cat] || CAT["Uncategorised"];
+        const catConf  = CAT[cat] || CAT["Uncategorized"];
         const groupDiv = document.createElement("div");
         groupDiv.className = "cat-group";
 
@@ -465,7 +466,7 @@ function renderBreakdown() {
     Object.entries(byCategory)
         .sort((a, b) => b[1] - a[1])
         .forEach(([cat, total]) => {
-            const catConf = CAT[cat] || CAT["Uncategorised"];
+            const catConf = CAT[cat] || CAT["Uncategorized"];
             const pct     = (total / maxVal) * 100;
             const row     = document.createElement("div");
             row.className = "breakdown-row";
@@ -508,6 +509,7 @@ inputForm.addEventListener("submit", async (e) => {
         itemNameEl.focus();
         errorMsg.textContent = "";
         renderItems();
+        toast.success(`"${newItem.name}" added to list.`);
     } catch (_) {}
 });
 
@@ -534,33 +536,38 @@ async function deleteItem(itemId, cardEl) {
         await apiFetch(`/items/${itemId}`, { method: "DELETE" });
         allItems = allItems.filter(i => i.id !== itemId);
         renderItems();
+        toast.success("Item removed.");
     } catch (_) {}
 }
 
 // ── Clear all ─────────────────────────────────────
-clearBtn.addEventListener("click", async () => {
+clearBtn.addEventListener("click", () => {
     if (!activeListId || allItems.length === 0) return;
-    if (!confirm("Clear all items from this list?")) return;
-    try {
-        await Promise.all(allItems.map(i => apiFetch(`/items/${i.id}`, { method: "DELETE" })));
-        allItems = [];
-        renderItems();
-    } catch (_) {}
+    toast.confirm("Clear all items from this list?", async () => {
+        try {
+            await Promise.all(allItems.map(i => apiFetch(`/items/${i.id}`, { method: "DELETE" })));
+            allItems = [];
+            renderItems();
+            toast.success("List cleared.");
+        } catch (_) {}
+    });
 });
 
 // ── Delete list ───────────────────────────────────
-btnDeleteList.addEventListener("click", async () => {
+btnDeleteList.addEventListener("click", () => {
     const lst = allLists.find(l => l.id === activeListId);
     if (!lst) return;
-    if (!confirm(`Delete "${lst.name}" and all its items?`)) return;
-    try {
-        await apiFetch(`/lists/${activeListId}`, { method: "DELETE" });
-        allLists = allLists.filter(l => l.id !== activeListId);
-        activeListId = null;
-        allItems     = [];
-        renderSidebar();
-        renderDashboard();
-    } catch (_) {}
+    toast.confirm(`Delete "${lst.name}" and all its items?`, async () => {
+        try {
+            await apiFetch(`/lists/${activeListId}`, { method: "DELETE" });
+            toast.success(`"${lst.name}" deleted.`);
+            allLists = allLists.filter(l => l.id !== activeListId);
+            activeListId = null;
+            allItems     = [];
+            renderSidebar();
+            renderDashboard();
+        } catch (_) {}
+    });
 });
 
 // ── Back to dashboard ─────────────────────────────
@@ -612,6 +619,7 @@ editSave.addEventListener("click", async () => {
         if (idx !== -1) allItems[idx] = updated;
         closeModal(editModal);
         renderItems();
+        toast.success("Item updated.");
     } catch (_) {}
 });
 
@@ -649,6 +657,7 @@ newListSave.addEventListener("click", async () => {
         closeModal(newListModal);
         renderSidebar();
         await openListView(newList.id);
+        toast.success(`"${newList.name}" created!`);
     } catch (err) {
         newListSave.textContent = "Create List";
         newListSave.disabled    = false;
