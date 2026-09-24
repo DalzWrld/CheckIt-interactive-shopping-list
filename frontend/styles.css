@@ -552,7 +552,6 @@ body {
     gap: 0;
 }
 
-/* Top bar */
 .list-view-topbar {
     background: var(--sidebar-bg);
     padding: 14px 40px;
@@ -560,6 +559,26 @@ body {
     align-items: center;
     justify-content: space-between;
 }
+
+.topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-edit-list {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.75);
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    font-weight: 500;
+    padding: 5px 14px;
+    border-radius: 99px;
+    cursor: pointer;
+    transition: all 0.18s;
+}
+.btn-edit-list:hover { background: rgba(255,255,255,0.15); color: #fff; }
 
 .btn-back {
     background: rgba(255,255,255,0.08);
@@ -577,6 +596,26 @@ body {
     gap: 6px;
 }
 .btn-back:hover { background: rgba(255,255,255,0.15); color: #fff; }
+
+.topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-edit-list {
+    background: none;
+    border: 1px solid rgba(255,255,255,0.2);
+    color: rgba(255,255,255,0.75);
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    font-weight: 500;
+    padding: 5px 14px;
+    border-radius: 99px;
+    cursor: pointer;
+    transition: all 0.18s;
+}
+.btn-edit-list:hover { background: rgba(255,255,255,0.1); color: #fff; border-color: rgba(255,255,255,0.4); }
 
 .btn-delete-list {
     background: none;

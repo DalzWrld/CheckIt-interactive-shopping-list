@@ -1,7 +1,6 @@
 /* ═══════════════════════════════════════════════════
    CheckIt — main.js
-   Communicates with Flask REST API at localhost:5001
-════════════════════════════════════════════════════ */ 
+════════════════════════════════════════════════════ */
 
 // ── Category config ──────────────────────────────
 const CAT = {
@@ -71,6 +70,7 @@ const btnNewList    = document.getElementById("btnNewList");
 const btnHeroNew    = document.getElementById("btnHeroNew");
 const btnEmptyNew   = document.getElementById("btnEmptyNew");
 const btnBack       = document.getElementById("btnBack");
+const btnEditList   = document.getElementById("btnEditList");
 const btnDeleteList = document.getElementById("btnDeleteList");
 
 // Modals
@@ -89,6 +89,12 @@ const editAisleEl   = document.getElementById("editAisle");
 const editNoteEl    = document.getElementById("editNote");
 const editCancel    = document.getElementById("editCancel");
 const editSave      = document.getElementById("editSave");
+
+const editListModal  = document.getElementById("editListModal");
+const editListName   = document.getElementById("editListName");
+const editListBudget = document.getElementById("editListBudget");
+const editListCancel = document.getElementById("editListCancel");
+const editListSave   = document.getElementById("editListSave");
 
 // ── Helpers ──────────────────────────────────────
 const fmt = (n) =>
@@ -596,6 +602,58 @@ btnBack.addEventListener("click", () => {
     renderDashboard();
 });
 
+// ── Edit list modal ───────────────────────────────
+btnEditList.addEventListener("click", () => {
+    const lst = allLists.find(l => l.id === activeListId);
+    if (!lst) return;
+    editListName.value   = lst.name;
+    editListBudget.value = lst.budget || "";
+    openModal(editListModal);
+    editListName.focus();
+});
+
+editListCancel.addEventListener("click", () => closeModal(editListModal));
+
+editListSave.addEventListener("click", async () => {
+    const name   = editListName.value.trim();
+    const budget = parseFloat(editListBudget.value) || null;
+
+    if (!name) {
+        editListName.style.borderColor = "#ef4444";
+        editListName.focus();
+        return;
+    }
+    editListName.style.borderColor = "";
+
+    try {
+        const updated = await apiFetch(`/lists/${activeListId}`, {
+            method: "PATCH",
+            body: JSON.stringify({ name, budget })
+        });
+
+        // Update local state
+        const idx = allLists.findIndex(l => l.id === activeListId);
+        if (idx !== -1) allLists[idx] = { ...allLists[idx], ...updated };
+
+        // Refresh the view header and sidebar
+        listViewTitle.textContent   = updated.name;
+        listViewEyebrow.textContent = updated.budget
+            ? `Budget: ${fmt(updated.budget)}`
+            : "Shopping List";
+
+        if (updated.budget) {
+            budgetBar.hidden = false;
+            renderBudget(updated.budget);
+        } else {
+            budgetBar.hidden = true;
+        }
+
+        renderSidebar();
+        closeModal(editListModal);
+        toast.success("List updated.");
+    } catch (_) {}
+});
+
 // ── Filter ────────────────────────────────────────
 filterCategory.addEventListener("change", renderItems);
 
@@ -701,12 +759,16 @@ sidebarOverlay.addEventListener("click", closeSidebar);
 function openModal(el)  { el.classList.add("open");    el.setAttribute("aria-hidden", "false"); }
 function closeModal(el) { el.classList.remove("open"); el.setAttribute("aria-hidden", "true");  }
 
-[newListModal, editModal].forEach(overlay => {
+[newListModal, editModal, editListModal].forEach(overlay => {
     overlay.addEventListener("click", e => { if (e.target === overlay) closeModal(overlay); });
 });
 
 document.addEventListener("keydown", e => {
-    if (e.key === "Escape") { closeModal(newListModal); closeModal(editModal); }
+    if (e.key === "Escape") {
+        closeModal(newListModal);
+        closeModal(editModal);
+        closeModal(editListModal);
+    }
 });
 
 // ── Init ──────────────────────────────────────────
