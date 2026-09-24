@@ -25,7 +25,10 @@ class Config:
     }
 
     # CORS — restrict origins in production
-    CORS_ORIGINS = "*"
+    CORS_ORIGINS = [  # noqa: RUF012
+        origin.strip()
+        for origin in os.environ.get("ALLOWED_ORIGINS", "*").split(",")
+    ]
 
 
 class DevelopmentConfig(Config):
@@ -52,7 +55,10 @@ class ProductionConfig(Config):
 
     DEBUG = False
     SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL")
-    CORS_ORIGINS = os.environ.get("ALLOWED_ORIGINS", "*")
+    CORS_ORIGINS = [  # noqa: RUF012
+        origin.strip()
+        for origin in os.environ.get("ALLOWED_ORIGINS", "*").split(",")
+    ]
 
     # Safety check — raise early if no DB URL is set
     @classmethod
