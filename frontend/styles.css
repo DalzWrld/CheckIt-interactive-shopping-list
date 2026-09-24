@@ -1205,6 +1205,7 @@ body {
 }
 
 .edit-row { display: flex; gap: 12px; }
+.edit-row .field-group { flex: 1; min-width: 0; }
 
 .optional {
     font-size: 0.68rem;
